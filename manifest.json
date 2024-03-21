@@ -10,5 +10,11 @@
       "world": "MAIN",
       "run_at": "document_start"
     }
-  ]
+  ],
+ "icons": {
+    "16": "fido16.png",
+    "32": "fido32.png",
+    "48": "fido48.png",
+    "128": "fido128.png"
+  }
 }
