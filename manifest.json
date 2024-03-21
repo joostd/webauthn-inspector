@@ -2,7 +2,6 @@
   "manifest_version": 3,
   "name": "WebauthN Tracer",
   "version": "1.0.0",
-  "permissions": ["activeTab"],
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://localhost/*"],
