@@ -1,10 +1,20 @@
 {
   "manifest_version": 3,
-  "name": "WebauthN Tracer",
-  "version": "1.0.0",
+  "name": "WebAuthn API call inspector",
+  "version": "1.0",
+  "description": "Sniff on call parameters and results of the create and get methods of navigator.credentials",
+  "permissions": [
+    "storage", "activeTab", "contextMenus"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+ "action": {
+    "default_popup": "popup.html"
+  },
   "content_scripts": [
     {
-      "matches": ["https://*/*", "http://localhost/*"],
+      "matches": ["<all_urls>"],
       "js": ["content.js"],
       "world": "MAIN",
       "run_at": "document_start"

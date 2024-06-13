@@ -1,0 +1,5 @@
+FIX: read settings using the storage API while running in MAIN world
+https://stackoverflow.com/questions/9515704/access-variables-and-functions-defined-in-page-context-from-an-extension
+
+FIX: also show WebAuthn API call results
+https://stackoverflow.com/questions/45700756/how-to-intercept-promises-response-in-then-or-catch

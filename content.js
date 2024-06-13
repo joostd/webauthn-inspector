@@ -1,31 +1,55 @@
-const originalGet = navigator.credentials.get;
-const originalCreate = navigator.credentials.create;
+(function() {
+  const originalCredentialsCreate = navigator.credentials.create;
+  const originalCredentialsGet    = navigator.credentials.get;
 
-console.log("%cWebAuthn Tracer is active", "color: red");
+  navigator.credentials.create = function(options) {
+    console.log('navigator.credentials.create:');
+    console.log(options);
+    console.log(JSON.stringify(options, replacer, "\t"));
+    console.log(options.publicKey.authenticatorSelection.authenticatorAttachment);
 
-// Note that this will log any call to the Credential Management API (not just for WebAuthn)
-// https://developer.mozilla.org/en-US/docs/Web/API/Credential_Management_API
+    deleteAuthenticatorAttachment = false;
+    if(chrome.storage) {	// TODO: make available in isolated worlds
+      chrome.storage.local.get('deleteAuthenticatorAttachment', function(items) {
+        deleteAuthenticatorAttachment = items.deleteAuthenticatorAttachment;
+      });
+    } else {
+      console.warn("chrome.storage API not available");
+    }
 
-function logAttestation(attestation) {
-  console.log('Attestation: ', attestation);
-}
+    // make registration work with cross-platform authenticators
+    if(deleteAuthenticatorAttachment) {
+      if( options.publicKey.authenticatorSelection.authenticatorAttachment === "platform" ) {
+        delete(options.publicKey.authenticatorSelection.authenticatorAttachment);
+      }
+    }
+    const promise = originalCredentialsCreate.apply(this, arguments);
+    return promise;
+  };
 
-function logAssertion(assertion) {
-  console.log('Assertion: ', assertion);
-}
+  navigator.credentials.get = function(options) {
+    console.log('navigator.credentials.get:');
+    console.log(options);
+    console.log(JSON.stringify(options, replacer, "\t"));
+    const promise = originalCredentialsGet.apply(this, arguments);
+    return promise;
+  };
 
-navigator.credentials.create = function( options ) {
-  console.log('%cnavigator.credentials.create: ', "color: green");
-  console.log('CredentialCreationOptions: ', options);
-  const promise = originalCreate(options);
-  promise.then(logAttestation).catch(console.error);
-  return promise;
-}
+  // base64url-encode arrayBuffer 
+  function encodeAB(value) {
+    return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=/g, '');
+  }
 
-navigator.credentials.get = function( options ) {
-  console.log('%cnavigator.credentials.get: ', "color: green");
-  console.log('CredentialRequestOptions: ', options);
-  const promise = originalGet(options);
-  promise.then(logAssertion).catch(console.error);
-  return promise;
-}
+  function replacer(key, value) {
+    const abKeys = ["challenge", "id"]; // ArrayBuffer keys
+    if (abKeys.includes(key)) {
+      return encodeAB(value);
+    }
+    return value;
+  }
+
+  console.warn('WARNING: intercepting webauthn API calls');
+})();
