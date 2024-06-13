@@ -1,9 +1,4 @@
-console.log('background script');
-
-chrome.storage.local.get('deleteAuthenticatorAttachment', function(items) {
-  console.log('Settings retrieved', items);
-  console.log(items.deleteAuthenticatorAttachment);
-});
+console.log('background script started');
 
 chrome.runtime.onMessage.addListener((msg) => {
   console.log(msg.text);

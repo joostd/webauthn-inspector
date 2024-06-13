@@ -1,4 +1,4 @@
-# WebAuthn Tracer
+# WebAuthn API call inspector
 
 Simple Chrome Extension that logs webauthn API calls to the console.
 
